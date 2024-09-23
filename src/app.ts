@@ -1,4 +1,3 @@
-import createHttpError from 'http-errors';
 import globalErrorHandler from './middlewares/globalErrorHandler';
 
 import express  from "express"

@@ -1,9 +1,11 @@
 import { config } from './src/config/config';
 import app from './src/app';
+import connectDB from './src/config/db';
 
 
-const server=()=>{
-    console.log(config.port);
+const server=async()=>{
+    await connectDB();
+    
     
     const port=config.port ;
 

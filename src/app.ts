@@ -11,7 +11,7 @@ app.get("/",(req,res)=>{
    res.json({message:"Welcome to Elib API's"});
 });
 app.use("/api/users",userRouter);
-app.use("/api/user/books",bookRouter)
+app.use("/api/users/books",bookRouter)
 //global error handler
 app.use(globalErrorHandler);
     

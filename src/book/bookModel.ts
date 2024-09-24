@@ -11,6 +11,10 @@ author:{
     ref:"User",
     required:true
 },
+coverImage:{
+    type:String,
+    required:true,
+},
 file:{
     type:String,
     required:true,

@@ -1,10 +1,16 @@
 import globalErrorHandler from './middlewares/globalErrorHandler';
+import cors from "cors";
 
 import express  from "express"
 import userRouter from './user/userRouter';
 import bookRouter from './book/bookRouter';
+import { config } from './config/config';
 
 const app =express();
+app.use(cors({
+   origin:config.frontendDomain,
+
+}));
 app.use(express.json());
 
 app.get("/",(req,res)=>{

@@ -4,6 +4,7 @@ import cloudinary from "../config/cloudinary"; // Importing the cloudinary confi
 import bookModel from "./bookModel"; // Importing the book model to interact with the database
 import fs from "node:fs"; // Importing the fs module for file system operations
 import createHttpError from "http-errors";
+import { AuthRequest } from "../middlewares/authenticate";
 // import createHttpError from "http-errors"; // Uncomment to use for error handling
 
 // Function to create a new book
@@ -36,8 +37,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     // Logging the result of the upload for debugging
     console.log(uploadResult);
 
-// @ts-expect-error The error is expected here, so we add a description to explain why it's necessary
-console.log("userId",req.userId);
+
     
 
     // Uploading the PDF file to Cloudinary
@@ -55,12 +55,12 @@ console.log("userId",req.userId);
     // Logging the result of the PDF upload for debugging
     console.log("bookFileUploadResult:", bookFileUploadResult);
 
+    const _req=req as AuthRequest;
     // Pushing the book data to the database
     const newBook = await bookModel.create({
       title, // Book title from the request
       genre, // Book genre from the request
-      // @ts-expect-error The error is expected here, so we add a description to explain why it's necessary
-      author:req.userId,
+      author:_req.userId,
       // author: "66f2ea9438fee39da0ae5958", // Hardcoded author ID (replace with actual dynamic data)
       coverImage: uploadResult.secure_url, // Store the secure URL of the uploaded cover image
       file: bookFileUploadResult.secure_url, // Store the secure URL of the uploaded PDF file

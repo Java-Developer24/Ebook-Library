@@ -203,11 +203,50 @@ const getSingleBook = async (req: Request, res: Response, next: NextFunction) =>
       return next(createHttpError(500, `Error while getting the book, ${error}`)); // Return a 500 Internal Server Error with error message
   }
 };
+const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+  const bookId = req.params.bookId; // Extract the book ID from the request parameters
 
-const deleteBook=async(req: Request, res: Response, next: NextFunction)=>{
+  try {
+      // Find the book in the database using the provided book ID
+      const book = await bookModel.findById({ _id: bookId });
+      
+      // If the book is not found, return a 404 error
+      if (!book) {
+          return next(createHttpError(404, "Book not found"));
+      }
+    
+      // Check if the current user is authorized to delete the book
+      const _req = req as AuthRequest; // Typecast req to AuthRequest to access userId
+      if (book.author.toString() !== _req.userId) {
+          // If the user is not the author of the book, return a 403 error
+          return next(createHttpError(403, "Access denied"));
+      }
 
+      // Extract the public ID of the cover image from the Cloudinary URL
+      const coverFileSplits = book.coverImage.split("/");
+      const coverImagePublicId = coverFileSplits.at(-2) + "/" + coverFileSplits.at(-1)?.split(".").at(-2);
+    
+      // Extract the public ID of the book file from the Cloudinary URL
+      const bookFileSplits = book.file.split("/");
+      const bookFilePublicId = bookFileSplits.at(-2) + "/" + bookFileSplits.at(-1);
+    
+      // Delete the cover image and book file from Cloudinary
+      await cloudinary.uploader.destroy(coverImagePublicId); // Delete the cover image
+      await cloudinary.uploader.destroy(bookFilePublicId, { resource_type: "raw" }); // Delete the book file (PDF)
 
+      // Delete the book from the database
+      await bookModel.findByIdAndDelete({ _id: bookId });
+    
+      // Send a 204 No Content response indicating successful deletion
+      return res.sendStatus(204).json({ message: "Book deleted" });
+    
+  } catch (error) {
+      console.log(error); // Log any error that occurs
+      return next(createHttpError(500, "Error while deleting book")); // Return a 500 Internal Server Error
+  }
 };
+
+
 
 
 export { createBook,updateBook,listbooks,getSingleBook,deleteBook }; // Export the createBook function for use in other parts of the application
@@ -411,5 +450,37 @@ export { createBook,updateBook,listbooks,getSingleBook,deleteBook }; // Export t
 //   }
 
 // }
+// const deleteBook=async(req: Request, res: Response, next: NextFunction)=>{
+//   const bookid=req.params.bookId;
+
+//   try {
+//     const book=await bookModel.findById({_id:bookid});
+//     if(!book){
+//       return  next(createHttpError(404,"book not found"));
+//     }
+  
+//     //check access
+//     const _req=req as AuthRequest;
+//     if(book.author.toString()!==_req.userId){
+//       return next(createHttpError(403,"Access denied"));
+//     }
+//     const coverFileSplits=book.coverImage.split("/");
+//     const coverImagePublicId=coverFileSplits.at(-2)+"/"+coverFileSplits.at(-1)?.split(".").at(-2);
+  
+//     const bookFileSplits=book.file.split("/");
+//     const bookFilePublicId=bookFileSplits.at(-2)+"/"+bookFileSplits.at(-1);
+//     await cloudinary.uploader.destroy(coverImagePublicId);
+//     await cloudinary.uploader.destroy(bookFilePublicId,{resource_type:"raw"});
+//     await bookModel.findByIdAndDelete({_id:bookid});
+  
+//     return res.sendStatus(204).json({message:"book deleted"});
+  
+//   } catch (error) {
+//     console.log(error);
+//     return next(createHttpError(500,"error while deleting book"));
+    
+//   }
+
+// };
 
 // export {createBook}

@@ -84,10 +84,6 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
   next(); // Call the next middleware in the chain (optional in this context)
 };
 
-
-
-
-
 const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   // Destructuring title and genre from the request body
   const { title, genre } = req.body;
@@ -180,23 +176,41 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   next(); // Call the next middleware in the chain (optional in this context)
-}
-
-const Listbooks=async(req:Request,res:Response,next:NextFunction)=>{
+};
+const listbooks = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    //todo add pagination.
-    const book=await bookModel.find();
-    res.json(book);
-
-    
+      // Fetch all books from the database
+      // TODO: Add pagination to limit the number of books returned in one request
+      const books = await bookModel.find(); // Using bookModel to find all books
+      res.json(books); // Send the list of books back to the client as JSON
   } catch (error) {
-    return next(createHttpError(500,`Error while getting a books,${error}`));
-  
+      // If there's an error during the database query
+      return next(createHttpError(500, `Error while getting books, ${error}`)); // Return a 500 Internal Server Error with error message
   }
-}
+};
+
+const getSingleBook = async (req: Request, res: Response, next: NextFunction) => {
+  const bookId = req.params.bookId; // Extract the bookId from the request parameters
+  try {
+      // Find a single book by its ID
+      const book = await bookModel.findById({ _id: bookId }); // Using bookModel to find the book by its ID
+      if (!book) { // Check if the book was found
+          return next(createHttpError(404, `Book not found`)); // If not found, return a 404 Not Found error
+      }
+      res.json(book); // Send the found book back to the client as JSON
+  } catch (error) {
+      // If there's an error during the database query
+      return next(createHttpError(500, `Error while getting the book, ${error}`)); // Return a 500 Internal Server Error with error message
+  }
+};
+
+const deleteBook=async(req: Request, res: Response, next: NextFunction)=>{
 
 
-export { createBook,updateBook,Listbooks }; // Export the createBook function for use in other parts of the application
+};
+
+
+export { createBook,updateBook,listbooks,getSingleBook,deleteBook }; // Export the createBook function for use in other parts of the application
 
 
 
@@ -368,5 +382,34 @@ export { createBook,updateBook,Listbooks }; // Export the createBook function fo
 //   next();
     
 //   }
+// const listbooks=async(req:Request,res:Response,next:NextFunction)=>{
+//   try {
+//     //todo add pagination.
+//     const book=await bookModel.find();
+//     res.json(book);
+
+    
+//   } catch (error) {
+//     return next(createHttpError(500,`Error while getting a books,${error}`));
+  
+//   }
+// }
+
+// const getSingleBook=async(req:Request,res:Response,next:NextFunction)=>{
+//   const bookid=req.params.bookId
+//   try {
+
+//     const book= await bookModel.findById({_id:bookid});
+//     if(!book){ 
+      
+//       return next(createHttpError(404,`Book not found`))};
+//     res.json(book);
+    
+//   } catch (error) {
+//     return next(createHttpError(500, `Error while getting a book,${error}`));
+    
+//   }
+
+// }
 
 // export {createBook}

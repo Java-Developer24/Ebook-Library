@@ -181,7 +181,7 @@ const listbooks = async (req: Request, res: Response, next: NextFunction) => {
   try {
       // Fetch all books from the database
       // TODO: Add pagination to limit the number of books returned in one request
-      const books = await bookModel.find(); // Using bookModel to find all books
+      const books = await bookModel.find().populate("author","name"); // Using bookModel to find all books
       res.json(books); // Send the list of books back to the client as JSON
   } catch (error) {
       // If there's an error during the database query
@@ -193,7 +193,10 @@ const getSingleBook = async (req: Request, res: Response, next: NextFunction) =>
   const bookId = req.params.bookId; // Extract the bookId from the request parameters
   try {
       // Find a single book by its ID
-      const book = await bookModel.findById({ _id: bookId }); // Using bookModel to find the book by its ID
+      const book = await bookModel.findById({ _id: bookId })
+      .populate("author","name")
+      
+      ; // Using bookModel to find the book by its ID
       if (!book) { // Check if the book was found
           return next(createHttpError(404, `Book not found`)); // If not found, return a 404 Not Found error
       }

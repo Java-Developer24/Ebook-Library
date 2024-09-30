@@ -182,6 +182,7 @@ const listbooks = async (req: Request, res: Response, next: NextFunction) => {
       // Fetch all books from the database
       // TODO: Add pagination to limit the number of books returned in one request
       const books = await bookModel.find().populate("author","name"); // Using bookModel to find all books
+      console.log('books',books)
       res.json(books); // Send the list of books back to the client as JSON
   } catch (error) {
       // If there's an error during the database query

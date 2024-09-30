@@ -22,6 +22,8 @@ bookRouter.patch("/:bookId",authenticate,upload.fields([
 ]),updateBook);
 
 bookRouter.get("/",listbooks);
+
+
 bookRouter.get("/:bookId",getSingleBook);
 bookRouter.delete("/:bookId",authenticate,deleteBook);
 export default bookRouter;

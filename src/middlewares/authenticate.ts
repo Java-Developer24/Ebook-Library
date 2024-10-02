@@ -48,32 +48,4 @@ export default authenticate;
 
 
 
-
-//.....................>,,,,,,,,,,,>old code with prev comments.............................,>,,,,,,,,,,,,>
-
-// import { NextFunction, Request, Response } from "express";
-// import createHttpError from "http-errors";
-// import  {verify}  from "jsonwebtoken";
-// import { config } from "../config/config";
-
-// export interface AuthRequest extends Request{
-//     userId:string;
-// }
-
-// const authenticate=(req:Request,res:Response,next:NextFunction)=>{
-// //getting token through header
-//     const token=req.header("Authorization");
-//     if (!token) {
-//         return next(createHttpError(401,"No token provided"))
-        
-//     }
-//     const parsedToken=token.split(" ")[1];
-// //decoding the token sent through the header
-//     const decoded=verify(parsedToken,config.jwtSecret as string);
-//     console.log(decoded);
-// const _req=req as AuthRequest;
-//     _req.userId=decoded.sub as string;
-//     next();
-    
-// }
-// export default authenticate;
+ 
